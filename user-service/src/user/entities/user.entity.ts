@@ -18,8 +18,8 @@ export class User {
     @Column()
     password : string
 
-    @Column()
-    phone : number
+    @Column({nullable: true})
+    phone : string
 
     @CreateDateColumn()
     createdAt : Date
