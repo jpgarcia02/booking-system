@@ -10,12 +10,20 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "rootDir": ".",  // Cambiado a directorio actual
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@shared/*": ["../shared/src/*"]  // Mapeo de rutas
+    }
+  },
+  "include": ["src/**/*.ts", "../shared/src/**/*.ts"]  // Incluir archivos compartidos
 }
