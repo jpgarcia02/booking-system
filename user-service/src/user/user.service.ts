@@ -26,14 +26,8 @@ export class UserService {
     const save = await this.userRepository.save(createUser)
     const { password, ...userWithoutPassword } = save;
     return userWithoutPassword;
-    } catch (error) {
-    // 5. Capturar error de email duplicado (Postgres code 23505)
-    if (error.code === '23505') {
-      throw new BadRequestException('El email ya está en uso');
-    }
-    // Para otros errores, relanzamos
-    throw error;
-  }
+    } 
+  
 
   
 
@@ -49,14 +43,23 @@ export class UserService {
 
     return searchUser;
   }
-  async findByEmail(email: string){
-    const searchEmail = await this.userRepository.findOne({where:{email}})
-    if(!searchEmail){
-      throw new NotFoundException('Usuario no existe')
-    }
-    
-    return searchEmail
-  }
+  async findByEmail(email: string): Promise<User | null> {
+  return this.userRepository.findOne({
+    where: { email },
+    select: [
+      'id',
+      'firstName',
+      'lastName',
+      'email',
+      'phone',
+      'password',      // 👈 Esto es clave para login
+      'createdAt',
+      'updatedAt',
+      'isActive',
+    ],
+  });
+}
+
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const searchUser = await this.userRepository.findOne({where:{id}})
@@ -76,7 +79,12 @@ const updatedUser = await this.userRepository.save(searchUser)
     
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const searchUser = await this.userRepository.findOne({where:{id}})
+    if(!searchUser){
+      throw new NotFoundException(`Usuario con el ID: ${id} no encontrado`)
+    }
+    await this.userRepository.remove(searchUser)
+    return `Usuario con el ID: #${id} Eliminado`;
   }
 }
